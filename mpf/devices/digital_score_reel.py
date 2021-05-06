@@ -29,6 +29,10 @@ class DigitalScoreReel(SystemWideDevice):
         self.machine.events.add_handler(self.name, self._post_reel_values)
 
     def _post_reel_values(self, **kwargs):
+        # pull only the right-most digits from a score to display on the digital score reels
+        # without this a score with more digits than the score reel will show the right-most digits
+        # ie without this code q five digital score reel will display 123,000 as 12,300 not 23,000
+        kwargs["value"] = kwargs["value"] % (10**self._reel_count)
         # Pad the string up to the necessary number of characters in the reel
         score = str(kwargs["value"]).rjust(self._reel_count, self.config["start_value"])
         # Create a dict of reel name keys to target frame values
